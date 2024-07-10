@@ -10,13 +10,13 @@
 
 template<typename DstPtr, typename SrcPtr>
 requires (std::is_pointer_v<DstPtr> && std::is_pointer_v<SrcPtr>)
-DstPtr down_cast (SrcPtr const src_ptr)
+DstPtr down_cast(SrcPtr const src_ptr)
 {
-  using Dst = std::remove_pointer_t<DstPtr>;
-  using Src = std::remove_pointer_t<SrcPtr>;
+  using Dst = std::remove_pointer_t<DstPtr>;  // might be const volatile
+  using Src = std::remove_pointer_t<SrcPtr>;  // might be const volatile
 
-  static_assert(std::is_polymorphic_v<Dst>, "Destination type must be polymorphic.");
-  static_assert(std::derived_from<Dst,Src>, "Source type must be a public base class of Destination type.");
+  if ( false == std::is_polymorphic_v<Dst> ) return nullptr;  // Destination type must be polymorphic
+  if ( false == std::derived_from<Dst,Src> ) return nullptr;  // Source type must be a public base class of Destination type
 
   static_assert( std::is_const_v   <Dst> || !std::is_const_v<Src>   );
   static_assert( std::is_volatile_v<Dst> || !std::is_volatile_v<Src>);
